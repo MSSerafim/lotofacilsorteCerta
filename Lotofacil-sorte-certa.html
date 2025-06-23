@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validação Pix + Lotofácil</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-green-100 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Gerador de Números da Lotofácil</h2>
+
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg">
+      <p class="text-gray-700">📌 Para participar, envie <strong>R$2,00</strong> via Pix para:</p>
+      <p class="font-semibold text-red-600 text-lg mt-2" id="pixChaveDisplay">a24f0a22-b867-4aa4-85cf-ddb9d283448f</p>
+    </div>
+
+    <form id="formPix" class="space-y-4">
+      <div>
+        <label for="nome" class="block text-sm font-medium text-gray-700">Nome</label>
+        <input type="text" id="nome" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2" placeholder="Digite seu nome">
+      </div>
+
+      <div>
+        <label for="dataNascimento" class="block text-sm font-medium text-gray-700">Data de Nascimento</label>
+        <input type="date" id="dataNascimento" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2">
+      </div>
+
+      <div>
+        <label for="pixId" class="block text-sm font-medium text-gray-700">ID da Transação Pix</label>
+        <input type="text" id="pixId" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2" placeholder="Ex: E12345678AAAAAAA20250623">
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">Validar e Gerar Números</button>
+    </form>
+
+    <div id="result" class="mt-4 text-center font-semibold"></div>
+    <div id="numeros" class="mt-4 text-center"></div>
+
+    <div class="mt-6 text-sm text-gray-600 text-center">
+      <p><strong>Observação:</strong> Os números gerados são apenas palpites para a Lotofácil e não garantem ganhos. Jogue com responsabilidade!</p>
+      <p class="mt-2 text-red-600 font-semibold" style="font-size: 16px;">Chave Pix: a24f0a22-b867-4aa4-85cf-ddb9d283448f</p>
+    </div>
+  </div>
+
+  <script>
+    function gerarNumerosLotofacil() {
+      const numeros = new Set();
+      while (numeros.size < 15) {
+        const numero = Math.floor(Math.random() * 25) + 1;
+        numeros.add(numero);
+      }
+      return Array.from(numeros).sort((a, b) => a - b);
+    }
+
+    document.getElementById("formPix").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const pixId = document.getElementById("pixId").value.trim().toUpperCase();
+      const resultDiv = document.getElementById("result");
+      const numerosDiv = document.getElementById("numeros");
+      numerosDiv.innerHTML = "";
+
+      const hoje = new Date();
+      const ano = hoje.getFullYear();
+      const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+      const dia = String(hoje.getDate()).padStart(2, '0');
+      const dataHojeFormatada = `${ano}${mes}${dia}`;
+
+      const regex = new RegExp(`^E.{8}${dataHojeFormatada}`);
+
+      if (!regex.test(pixId)) {
+        resultDiv.textContent = "❌ ID de transação inválido. Verifique se está correto.";
+        resultDiv.className = "mt-4 text-center font-semibold text-red-600";
+        return;
+      }
+
+      resultDiv.textContent = "✅ Pagamento validado com sucesso!";
+      resultDiv.className = "mt-4 text-center font-semibold text-green-600";
+
+      const numeros = gerarNumerosLotofacil();
+      numerosDiv.className = "mt-4 text-center bg-green-50 p-4 rounded-lg";
+      numerosDiv.innerHTML = `🎲 Seus números da Lotofácil:<br><br><strong class="text-lg text-green-800">${numeros.map(n => String(n).padStart(2, '0')).join(' - ')}</strong>`;
+    });
+  </script>
+</body>
+</html>
